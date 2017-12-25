@@ -34,8 +34,8 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 binutils-mingw-w64-i686 mingw-w64-i686-dev g++-mingw-w64-i686 gcc-mingw-w64-i686 && \
     /opt/windev/upx_build && \
     ln -s /opt/windev/bin/upx /usr/local/bin/upx && \
-	rm -rf /temp && \
-	/opt/windev/qt_build && \
+    rm -rf /temp && \
+    /opt/windev/qt_build && \
     rm -rf /temp && \
     apt-get remove -y clang cmake libucl-dev nasm ninja-build perl wget zlib1g-dev && \
     apt-get autoremove -y && \
