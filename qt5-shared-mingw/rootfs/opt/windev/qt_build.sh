@@ -1,0 +1,289 @@
+#!/bin/bash -e
+
+# --------------------------------------
+# -------- FOLDERS DEFINED HERE --------
+
+if [ ! "$CUSTOM_DIRECTORY" == "YES" ]; then
+   # Build Directory
+   export WDEVBUILD=~/build
+   # Install Prefix
+   export WDEVPREFIX=/opt/windev
+   # Source Directory
+   export WDEVSOURCE=~/src
+fi
+
+# --------------------------------------
+# -------- VERSION DEFINED HERE --------
+
+if [ ! "$CUSTOM_VERSION" == "YES" ]; then
+   # Third Party
+   export LIBJPEGTURBO_VERSION=1.5.3
+   export LIBRESSL_VERSION=2.6.4
+   
+   # Qt Framework
+   export QT_SERIES=5.6
+   export QT_BUILD=3
+fi
+
+# --------------------------------------
+# ----------- QT BUILD FLAGS -----------
+
+if [ "$QT_FLAGS" == "" ]; then
+   export QT_FLAGS="-no-icu -openssl-linked -system-libjpeg -qt-libpng -qt-zlib -qt-freetype -opengl desktop -skip qtactiveqt"
+fi
+if [ "$QT_LINUX_MKSPEC" == "" ]; then
+   export QT_LINUX_MKSPEC=linux-clang
+fi
+
+# --------------------------------------
+# --------- CPU VARIABLES HERE ---------
+
+if [ "$CPU_THREADS" == "" ]; then
+   export CPU_THREADS=`nproc --all`
+fi
+
+# --------------------------------------
+# ----- DON'T EDIT BELOW THIS LINE -----
+# --------------------------------------
+
+# libjpeg-turbo Script
+
+function libjpegturbo_init {
+   mkdir -p ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
+   cd ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
+   if [ "${WDEVQT}" == "qt32" ]; then
+      touch ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/toolchain.cmake
+      echo "set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_PROCESSOR X86)
+set(CMAKE_C_COMPILER /usr/bin/i686-w64-mingw32-gcc)
+set(CMAKE_CXX_COMPILER /usr/bin/i686-w64-mingw32-g++)
+set(CMAKE_RC_COMPILER /usr/bin/i686-w64-mingw32-windres)" > ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/toolchain.cmake
+   else
+      touch ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/toolchain.cmake
+      echo "set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_PROCESSOR AMD64)
+set(CMAKE_C_COMPILER /usr/bin/x86_64-w64-mingw32-gcc)
+set(CMAKE_CXX_COMPILER /usr/bin/x86_64-w64-mingw32-g++)
+set(CMAKE_RC_COMPILER /usr/bin/x86_64-w64-mingw32-windres)" > ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/toolchain.cmake
+   fi
+}
+
+function libjpegturbo_build {
+   mkdir -p ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
+   cd ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
+   cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Release -DENABLE_SHARED=${WDEVSHARED} -DCMAKE_INSTALL_PREFIX=${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE} -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake ${WDEVSOURCE_LIBJPEGTURBO}
+   ninja
+}
+
+function libjpegturbo_install {
+   cd ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
+   ninja install
+}
+
+function libjpegturbo_clean {
+   cd ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
+   rm -rf ${WDEVBUILD}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/*
+}
+
+function libjpegturbo_strip {
+   cd ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
+   rm -rf bin doc
+}
+
+function libjpegturbo_source {
+   VERSION=$1
+   ARCHIVE=libjpeg-turbo-${VERSION}
+   mkdir -p ${WDEVSOURCE}
+   cd ${WDEVSOURCE}
+   wget -O ${ARCHIVE}.tar.gz https://github.com/libjpeg-turbo/libjpeg-turbo/archive/${VERSION}.tar.gz
+   tar xfz ${ARCHIVE}.tar.gz
+   export WDEVSOURCE_LIBJPEGTURBO=${WDEVSOURCE}/${ARCHIVE}
+}
+
+# LibreSSL script
+
+function libressl_init {
+   mkdir -p ${WDEVBUILD}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+   cd ${WDEVBUILD}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+}
+
+function libressl_build {
+   mkdir -p ${WDEVBUILD}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+   cd ${WDEVBUILD}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+   if [ "${WDEVQT}" == "qt32" ]; then
+      export COMPILER=i686-w64-mingw32
+      export AR=${COMPILER}-ar
+      export CC=${COMPILER}-gcc
+      export CXX=${COMPILER}-g++
+      export CPP=${COMPILER}-cpp
+      export RANLIB=${COMPILER}-ranlib
+   else
+      export COMPILER=x86_64-w64-mingw32
+      export AR=${COMPILER}-ar
+      export CC=${COMPILER}-gcc
+      export CXX=${COMPILER}-g++
+      export CPP=${COMPILER}-cpp
+      export RANLIB=${COMPILER}-ranlib
+   fi
+   if [ "${WDEVTYPE}" == "s" ]; then
+      EXTRA_FLAGS=--disable-shared
+   else
+      EXTRA_FLAGS=
+   fi
+   ${WDEVSOURCE_LIBRESSL}/configure --host=${COMPILER} ${EXTRA_FLAGS} --prefix=${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+   make -j${CPU_THREADS}
+   unset COMPILER AR CC CXX CPP RANLIB
+}
+
+function libressl_install {
+   if [ "${WDEVQT}" == "qt32" ]; then
+      export COMPILER=i686-w64-mingw32
+      export AR=${COMPILER}-ar
+      export CC=${COMPILER}-gcc
+      export CXX=${COMPILER}-g++
+      export CPP=${COMPILER}-cpp
+      export RANLIB=${COMPILER}-ranlib
+   else
+      export COMPILER=x86_64-w64-mingw32
+      export AR=${COMPILER}-ar
+      export CC=${COMPILER}-gcc
+      export CXX=${COMPILER}-g++
+      export CPP=${COMPILER}-cpp
+      export RANLIB=${COMPILER}-ranlib
+   fi
+   cd ${WDEVBUILD}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+   make install
+   unset COMPILER AR CC CXX CPP RANLIB
+}
+
+function libressl_clean {
+   cd ${WDEVBUILD}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+   rm -rf ${WDEVBUILD}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/*
+}
+
+function libressl_strip {
+   cd ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
+   rm -rf bin etc share
+}
+
+function libressl_source {
+   VERSION=$1
+   ARCHIVE=libressl-${VERSION}
+   mkdir -p ${WDEVSOURCE}
+   cd ${WDEVSOURCE}
+   wget -O ${ARCHIVE}.tar.gz https://fastly.cdn.openbsd.org/pub/OpenBSD/LibreSSL/${ARCHIVE}.tar.gz
+   tar xfz ${ARCHIVE}.tar.gz
+   export WDEVSOURCE_LIBRESSL=${WDEVSOURCE}/${ARCHIVE}
+}
+
+# Qt script
+
+function qt_init {
+   mkdir -p ${WDEVBUILD}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}
+   cd ${WDEVBUILD}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}
+}
+
+function qt_build {
+   mkdir -p ${WDEVBUILD}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}
+   cd ${WDEVBUILD}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}
+   if [ "${WDEVQT}" == "qt32" ]; then
+      COMPILER=i686-w64-mingw32
+   else
+      COMPILER=x86_64-w64-mingw32
+   fi
+   if [ "${WDEVTYPE}" == "s" ]; then
+      EXTRA_FLAGS=-static
+   else
+      EXTRA_FLAGS=-shared
+   fi
+   ${WDEVSOURCE_QT}/configure -prefix ${WDEVPREFIX}/${WDEVQT}${WDEVTYPE}_${QT_VERSION} -device-option CROSS_COMPILE=${COMPILER}- -platform ${QT_LINUX_MKSPEC} -xplatform win32-g++ -L ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/lib -I ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/include -L ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/lib -I ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/include -release ${QT_FLAGS} -nomake tests -nomake examples -opensource -confirm-license ${EXTRA_FLAGS}
+   make -j${CPU_THREADS}
+}
+
+function qt_install {
+   cd ${WDEVBUILD}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}
+   make install
+}
+
+function qt_clean {
+   cd ${WDEVBUILD}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}
+   rm -rf ${WDEVBUILD}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}/*
+}
+
+function qt_strip {
+   cd ${WDEVPREFIX}/${WDEVQT}${WDEVTYPE}_${QT_VERSION}
+   rm -rf bin/*.exe doc
+}
+
+function qt_source {
+   SERIES=$1
+   BUILD=$2
+   VERSION=${SERIES}.${BUILD}
+   ARCHIVE=qt-everywhere-opensource-src-${VERSION}
+   mkdir -p ${WDEVSOURCE}
+   cd ${WDEVSOURCE}
+   wget -O ${ARCHIVE}.tar.xz https://mirror.netcologne.de/qtproject/official_releases/qt/${SERIES}/${VERSION}/single/${ARCHIVE}.tar.xz
+   tar xfJ ${ARCHIVE}.tar.xz
+   export QT_VERSION=${VERSION}
+   export WDEVSOURCE_QT=${WDEVSOURCE}/${ARCHIVE}
+}
+
+# General build script
+
+function build_init {
+   mkdir -p ${WDEVBUILD}
+   cd ${WDEVBUILD}
+}
+
+function build_type {
+   export WDEVQT=$1
+   export WDEVTYPE=$2
+   if [ "${WDEVTYPE}" == "s" ]; then
+      export WDEVSHARED=OFF
+   else
+      export WDEVSHARED=ON
+   fi
+}
+
+function build_set {
+   build_type $1 $2
+   
+   libjpegturbo_init
+   libjpegturbo_build
+   libjpegturbo_install
+   libjpegturbo_strip
+   libjpegturbo_clean
+   
+   libressl_init
+   libressl_build
+   libressl_install
+   libressl_strip
+   libressl_clean
+   
+   qt_init
+   qt_build
+   qt_install
+   qt_strip
+   qt_clean
+}
+
+# Runtime execution script
+
+build_init
+
+libjpegturbo_source ${LIBJPEGTURBO_VERSION}
+libressl_source ${LIBRESSL_VERSION}
+qt_source ${QT_SERIES} ${QT_BUILD}
+
+if [ ! "$BUILD_QT32_SHARED" == "NO" ]; then
+   build_set qt32 d
+fi
+if [ ! "$BUILD_QT64_SHARED" == "NO" ]; then
+   build_set qt64 d
+fi
+if [ ! "$BUILD_QT32_STATIC" == "NO" ]; then
+   build_set qt32 s
+fi
+if [ ! "$BUILD_QT64_STATIC" == "NO" ]; then
+   build_set qt64 s
+fi
