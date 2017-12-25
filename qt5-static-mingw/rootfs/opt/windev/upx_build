@@ -1,0 +1,79 @@
+#!/bin/bash -e
+
+# --------------------------------------
+# -------- FOLDERS DEFINED HERE --------
+
+if [ ! "$CUSTOM_DIRECTORY" == "YES" ]; then
+   # Build Directory
+   export WDEVBUILD=~/build
+   # Install Prefix
+   export WDEVPREFIX=/opt/windev
+   # Source Directory
+   export WDEVSOURCE=~/src
+fi
+
+# --------------------------------------
+# -------- VERSION DEFINED HERE --------
+
+if [ ! "$CUSTOM_VERSION" == "YES" ]; then
+   # UPX
+   export UPX_VERSION=3.94
+fi
+
+# --------------------------------------
+# --------- CPU VARIABLES HERE ---------
+
+if [ "$CPU_THREADS" == "" ]; then
+   export CPU_THREADS=`nproc --all`
+fi
+
+# --------------------------------------
+# ----- DON'T EDIT BELOW THIS LINE -----
+# --------------------------------------
+
+# UPX script
+
+function upx_build {
+   cd ${WDEVSOURCE_UPX}/src
+   make -j${CPU_THREADS}
+}
+
+function upx_install {
+   cd ${WDEVSOURCE_UPX}/src
+   mkdir -p ${WDEVPREFIX}/bin
+   cp -Rf upx.out ${WDEVPREFIX}/bin/upx
+}
+
+function upx_source {
+   VERSION=$1
+   ARCHIVE=upx-${VERSION}-src
+   mkdir -p ${WDEVSOURCE}
+   cd ${WDEVSOURCE}
+   wget -O ${ARCHIVE}.tar.xz https://github.com/upx/upx/releases/download/v${VERSION}/${ARCHIVE}.tar.xz
+   tar xfJ ${ARCHIVE}.tar.xz
+   cd ${ARCHIVE}/src
+   rm -rf stub/scripts/check_whitespace.sh
+   touch stub/scripts/check_whitespace.sh
+   echo "#!/bin/bash
+exit 0" > stub/scripts/check_whitespace.sh
+   chmod +x stub/scripts/check_whitespace.sh
+   rm -rf stub/scripts/check_whitespace_git.sh
+   touch stub/scripts/check_whitespace_git.sh
+   echo "#!/bin/bash
+exit 0" > stub/scripts/check_whitespace_git.sh
+   chmod +x stub/scripts/check_whitespace_git.sh
+   export WDEVSOURCE_UPX=${WDEVSOURCE}/${ARCHIVE}
+}
+
+# General build script
+
+function build_init {
+   mkdir -p ${WDEVBUILD}
+   cd ${WDEVBUILD}
+}
+
+build_init
+
+upx_source ${UPX_VERSION}
+upx_build
+upx_install
