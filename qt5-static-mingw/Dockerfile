@@ -1,6 +1,10 @@
 # Debian Stretch is recommended
 FROM debian:stretch-slim
 
+# Custom Compiler
+ENV CC clang
+ENV CXX clang++
+
 # Custom Directory
 ENV CUSTOM_DIRECTORY YES
 ENV WDEVBUILD /temp/build
@@ -13,6 +17,7 @@ ENV QT_SERIES 5.6
 ENV QT_BUILD 3
 ENV LIBJPEGTURBO_VERSION 1.5.3
 ENV LIBRESSL_VERSION 2.6.4
+ENV UPX_VERSION 3.94
 
 # Exclude Static Qt
 ENV BUILD_QT32_SHARED NO
@@ -25,11 +30,14 @@ ENV BUILD_QT64_SHARED NO
 COPY rootfs /
 
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y bash clang cmake coreutils gzip make nasm ninja-build perl qtchooser tar wget xz-utils && \
+    apt-get install -y bash clang cmake coreutils gzip libucl1 libucl-dev make nasm ninja-build perl qtchooser tar wget xz-utils zlib1g zlib1g-dev && \
     apt-get install -y binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 binutils-mingw-w64-i686 mingw-w64-i686-dev g++-mingw-w64-i686 gcc-mingw-w64-i686 && \
-    /opt/windev/qt_build && \
+    /opt/windev/upx_build && \
+    ln -s /opt/windev/bin/upx /usr/local/bin/upx && \
+	rm -rf /temp && \
+	/opt/windev/qt_build && \
     rm -rf /temp && \
-    apt-get remove -y clang cmake nasm ninja-build perl wget && \
+    apt-get remove -y clang cmake libucl-dev nasm ninja-build perl wget zlib1g-dev && \
     apt-get autoremove -y && \
     apt-get autoclean
 		
