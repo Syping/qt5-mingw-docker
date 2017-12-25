@@ -1,6 +1,10 @@
 # Debian Stretch is recommended
 FROM debian:stretch-slim
 
+# Custom Compiler
+ENV CC clang
+ENV CXX clang++
+
 # Custom Directory
 ENV CUSTOM_DIRECTORY YES
 ENV WDEVBUILD /temp/build
