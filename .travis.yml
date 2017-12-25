@@ -1,0 +1,17 @@
+dist: trusty
+sudo: required
+
+language: cpp
+
+services:
+  - docker
+
+script:
+  - cd qt5-shared-mingw && docker build -t qt5-shared-mingw:latest . && cd ..
+  - cd qt5-static-mingw && docker build -t qt5-static-mingw:latest . && cd ..
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  on:
+    tags: true
