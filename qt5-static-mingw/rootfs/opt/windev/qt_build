@@ -87,7 +87,7 @@ function libjpegturbo_clean {
 
 function libjpegturbo_strip {
    cd ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}
-   rm -rf bin doc
+   rm -rf bin/*.exe doc
 }
 
 function libjpegturbo_source {
@@ -163,7 +163,7 @@ function libressl_clean {
 
 function libressl_strip {
    cd ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}
-   rm -rf bin etc share
+   rm -rf bin/*.exe etc share
 }
 
 function libressl_source {
