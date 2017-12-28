@@ -196,7 +196,7 @@ function qt_build {
    else
       EXTRA_FLAGS=-shared
    fi
-   OPENSSL_LIBS='-L${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/lib -lcrypto -lssl' ${WDEVSOURCE_QT}/configure -prefix ${WDEVPREFIX}/${WDEVQT}${WDEVTYPE}_${QT_VERSION} -device-option CROSS_COMPILE=${COMPILER}- -platform ${QT_LINUX_MKSPEC} -xplatform win32-g++ -L ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/lib -I ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/include -L ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/lib -I ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/include -release ${QT_FLAGS} -nomake tests -nomake examples -opensource -confirm-license ${EXTRA_FLAGS}
+   OPENSSL_LIBS='-L${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/lib -lssl -lcrypto' ${WDEVSOURCE_QT}/configure -prefix ${WDEVPREFIX}/${WDEVQT}${WDEVTYPE}_${QT_VERSION} -device-option CROSS_COMPILE=${COMPILER}- -platform ${QT_LINUX_MKSPEC} -xplatform win32-g++ -L ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/lib -I ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_${WDEVQT}${WDEVTYPE}/include -L ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/lib -I ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_${WDEVQT}${WDEVTYPE}/include -release ${QT_FLAGS} -nomake tests -nomake examples -opensource -confirm-license ${EXTRA_FLAGS}
    make -j${CPU_THREADS}
 }
 
