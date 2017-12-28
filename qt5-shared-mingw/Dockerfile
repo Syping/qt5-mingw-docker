@@ -31,12 +31,12 @@ COPY rootfs /
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y bash clang cmake coreutils gzip make nasm ninja-build perl qtchooser tar wget xz-utils && \
     apt-get install -y binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 binutils-mingw-w64-i686 mingw-w64-i686-dev g++-mingw-w64-i686 gcc-mingw-w64-i686 && \
-    /opt/windev/qt_build && \
+    /opt/windev/bin/qt_build && \
     rm -rf /temp && \
     apt-get remove -y clang cmake nasm ninja-build perl wget && \
     apt-get autoremove -y && \
     apt-get autoclean
-		
+
 RUN qtchooser -install -f qt5-x86_64-w64-mingw32 ${WDEVPREFIX}/qt64d_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
     qtchooser -install -f qt5-i686-w64-mingw32 ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
     qtchooser -install -f 5 ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
