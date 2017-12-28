@@ -1,5 +1,5 @@
 # Debian Stretch is recommended
-FROM debian:stretch-slim
+FROM ubuntu:xenial
 
 # Custom Compiler
 ENV CC clang
