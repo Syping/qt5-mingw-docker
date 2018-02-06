@@ -32,10 +32,10 @@ COPY rootfs /
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y bash clang cmake coreutils gzip libucl1 libucl-dev make nasm ninja-build perl qtchooser tar wget xz-utils zlib1g zlib1g-dev && \
     apt-get install -y binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 binutils-mingw-w64-i686 mingw-w64-i686-dev g++-mingw-w64-i686 gcc-mingw-w64-i686 && \
-    /opt/windev/bin/upx_build && \
+    /opt/windev/upx_build && \
     ln -s /opt/windev/bin/upx /usr/local/bin/upx && \
     rm -rf /temp && \
-    /opt/windev/bin/qt_build && \
+    /opt/windev/qt_build && \
     rm -rf /temp && \
     apt-get remove -y clang cmake libucl-dev nasm ninja-build perl wget zlib1g-dev && \
     apt-get autoremove -y && \
@@ -45,6 +45,12 @@ RUN qtchooser -install -f qt5-x86_64-w64-mingw32 ${WDEVPREFIX}/qt64s_${QT_SERIES
     qtchooser -install -f qt5-i686-w64-mingw32 ${WDEVPREFIX}/qt32s_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
     qtchooser -install -f 5 ${WDEVPREFIX}/qt32s_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
     qtchooser -install -f qt5 ${WDEVPREFIX}/qt32s_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
-    qtchooser -install -f default ${WDEVPREFIX}/qt32s_${QT_SERIES}.${QT_BUILD}/bin/qmake
+    qtchooser -install -f default ${WDEVPREFIX}/qt32s_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
+    ln -s ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_qt32s ${WDEVPREFIX}/libjpeg-turbo-latest_qt32s && \
+    ln -s ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_qt64s ${WDEVPREFIX}/libjpeg-turbo-latest_qt64s && \
+    ln -s ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_qt32s ${WDEVPREFIX}/libressl-latest_qt32s && \
+    ln -s ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_qt64s ${WDEVPREFIX}/libressl-latest_qt64s && \
+    ln -s ${WDEVPREFIX}/qt32s_${QT_SERIES}.${QT_BUILD} ${WDEVPREFIX}/qt32s-latest && \
+    ln -s ${WDEVPREFIX}/qt64s_${QT_SERIES}.${QT_BUILD} ${WDEVPREFIX}/qt64s-latest
 
 CMD ["/bin/bash"]
