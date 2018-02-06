@@ -35,7 +35,7 @@ RUN apt-get update && apt-get upgrade -y && \
     /opt/windev/upx_build && \
     ln -s /opt/windev/bin/upx /usr/local/bin/upx && \
     rm -rf /temp && \
-    /opt/windev/qt_build && \
+    /opt/windev/bin/qt_build && \
     rm -rf /temp && \
     apt-get remove -y clang cmake libucl-dev nasm ninja-build perl wget zlib1g-dev && \
     apt-get autoremove -y && \
