@@ -41,6 +41,12 @@ RUN qtchooser -install -f qt5-x86_64-w64-mingw32 ${WDEVPREFIX}/qt64d_${QT_SERIES
     qtchooser -install -f qt5-i686-w64-mingw32 ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
     qtchooser -install -f 5 ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
     qtchooser -install -f qt5 ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
-    qtchooser -install -f default ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD}/bin/qmake
+    qtchooser -install -f default ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD}/bin/qmake && \
+    ln -s ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_qt32d ${WDEVPREFIX}/libjpeg-turbo-latest_qt32d && \
+    ln -s ${WDEVPREFIX}/libjpeg-turbo-${LIBJPEGTURBO_VERSION}_qt64d ${WDEVPREFIX}/libjpeg-turbo-latest_qt64d && \
+    ln -s ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_qt32d ${WDEVPREFIX}/libressl-latest_qt32d && \
+    ln -s ${WDEVPREFIX}/libressl-${LIBRESSL_VERSION}_qt64d ${WDEVPREFIX}/libressl-latest_qt64d && \
+    ln -s ${WDEVPREFIX}/qt32d_${QT_SERIES}.${QT_BUILD} ${WDEVPREFIX}/qt32d-latest && \
+    ln -s ${WDEVPREFIX}/qt64d_${QT_SERIES}.${QT_BUILD} ${WDEVPREFIX}/qt64d-latest
 
 CMD ["/bin/bash"]
