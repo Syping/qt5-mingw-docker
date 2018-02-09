@@ -32,7 +32,7 @@ COPY rootfs /
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y bash clang cmake coreutils gzip libucl1 libucl-dev make nasm ninja-build perl qtchooser tar wget xz-utils zlib1g zlib1g-dev && \
     apt-get install -y binutils-mingw-w64-x86-64 mingw-w64-x86-64-dev g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 binutils-mingw-w64-i686 mingw-w64-i686-dev g++-mingw-w64-i686 gcc-mingw-w64-i686 && \
-    /opt/windev/upx_build && \
+    /opt/windev/bin/upx_build && \
     ln -s /opt/windev/bin/upx /usr/local/bin/upx && \
     rm -rf /temp && \
     /opt/windev/bin/qt_build && \
